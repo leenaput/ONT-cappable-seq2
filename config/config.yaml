@@ -1,4 +1,4 @@
-sample name: sampleID
+Sample name: sampleID
 fasta file: input/genome_data/sampleID.fasta
 enriched fastq: input/fastq_data/sampleID_enriched.fastq
 control fastq: input/fastq_data/sampleID_control.fastq
