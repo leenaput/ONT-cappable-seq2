@@ -18,6 +18,8 @@ ONT-cappable-seq2/
 	- genome_data/
 - peak_clustering.r
 
+### **II. Setting up the configuration file**
+
 The config.yaml file needs to be modified to your experimental settings. Adjust the paths to your input files and the different parameters used for annotation of the transcriptional boundaries. 
 
 where:
