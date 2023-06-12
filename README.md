@@ -1,12 +1,40 @@
 # ONT-cappable-seq2
 
-We describe here a general overview of the updated ONT-cappable-seq data analysis pipeline.
+We describe here a general overview of the updated ONT-cappable-seq data analysis pipeline, which is now fully automated. For a more detailed overview of individual steps, see the old ONT-cappable-seq repository.
 
+### **I. Data navigation**
 
-Data generation: library preparation and sequencing
-Total RNA was enriched for primary transcripts using an adapted version of the (SMRT)-cappable-seq enrichment protocol. In parallel, control samples were not enriched but subjected to similar environmental conditions. The RNA was reverse transcribed, PCR amplified and barcoded according to Oxford Nanopore Technology cDNA-PCR protocol (SQK-PCS109 combined with SQK-PBK004). The amplified cDNA samples were pooled together in a final library, which was subsequently loaded on a promethION flowcell (R9.4.1) and sequenced with live base-calling and demultiplexing enabled. Fastq files with Q-scores >7 were retained for further analysis. The overall quality of the sequencing run was assessed using NanoComp (v1.11.2).
+The repository is organized in the following way:
 
-Data processing
-Note: many of the steps outlined in this workflow are based on the microbepore pipeline that was used for the analysis of prokaryotic Nanopore RNA-seq data (https://felixgrunberger.github.io/microbepore/), with some modifications tailored to our ONT-cappable-seq approach.
+ONT-cappable-seq2/
+├── workflow/
+|	 ├── envs/
+|	 ├── rules/
+|	 └── snakefile
+├── config/
+|	 └── config.yaml
+├── input/
+|	 ├── fastq_data/
+|	 └── genome_data/
+└── peak_clustering.r
 
-I. Data navigation
+The config.yaml file needs to be modified to your experimental settings. Adjust the paths to your input files and the different parameters used for annotation of the transcriptional boundaries. 
+
+where:
+	- **Sample name**:  contains the name of your organism of interest (sampleID, *e.g LUZ19*)
+	- **Fasta file**: contains the path to your reference genome of interest (input/genome_data/sampleID.fasta, *e.g input/genome_data/LUZ19.fasta*)
+  - **Enriched fastq**: contains the path to the raw sequencing file of your enriched sample (input/fastq_data/sampleID_enriched.fastq, 
+    *e.g input/fastq_data/LUZ19_enriched.fastq*)
+	- **Control fastq**: contains the path to the raw sequencing file of your control sample
+    (input/fastq_data/sampleID_control.fastq, *e.g input/fastq_data/LUZ19_control.fastq*)
+	- **ID**: additional identifier to classify your samples (cannot be empty), e.g timepoint, specific condition, replicate, etc.
+	- **Termseq alpha**: peak calling threshold value used by the termseq-peak algorithm
+	- **Cluster width**: peak positions within the specified distance are clustered. The position with the highest number of reads is taken as the           representative of the cluster.
+	- **Minimum coverage**: absolute number of reads required at this position to be considered as candidate TSS/TTS position. This can be specified for     the enriched and the control sample separately. 
+	- **Peak alignment error**: Positional difference (n) allowed between peak positions identified in the enriched and the control dataset used to         calculate the enrichment ratio at a specific genomic position i, based on the read count per million mapped reads (RPM) at that peak position, as     calculated by: 
+
+			enrichment ratio (i)= (RPM_(enriched sample) (i))/(RPM_(control sample) (i±n)) 
+
+	- **TSS threshold**: enrichment ratio value that needs to be surpassed to annotate 5’ peak position as a TSS.
+  - **TTS threshold**: minimum read reduction to annotate 3’ peak position as TTS, determined calculating the coverage drop across the putative TTS,       averaged over a 20bp window.
+	- **TSS/TTS sequence extraction**: selection of promoter and terminator region for which you want to extract the DNA sequence, defined by the number      of up- and downstream nucleotides relative to the TSS and TTS.
