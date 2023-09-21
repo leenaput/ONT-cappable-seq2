@@ -27,7 +27,7 @@ rule cutadapt:
         "../envs/env_read_mapping.yaml"
     shell:
         """
-            cutadapt -a A{{10}} -e 1 -j 0 -o {output} {input}
+            cutadapt -a A{{10}} -e 0.1 -j 0 -o {output} {input}
         """
 rule cutadapt2:
     input: "results/processed_fastq/cutadapt/{sample}_{cond}_{ident}_cutadapt_2.fq"
@@ -36,7 +36,7 @@ rule cutadapt2:
         "../envs/env_read_mapping.yaml"
     shell:
         """
-            cutadapt -g TTTCTGTTGGTGCTGATATTGCTGGG -e 1 -j 0 -o {output} {input}
+            cutadapt -g TTTCTGTTGGTGCTGATATTGCTGGG -e 0.1 -j 0 -o {output} {input}
         """
 # Mapping reads onto genome
 rule minimap2:
